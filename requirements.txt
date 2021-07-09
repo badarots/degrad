@@ -1,2 +1,5 @@
 fastapi
 uvicorn[standard]
+pandas
+dash
+dash_daq
