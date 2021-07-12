@@ -9,11 +9,10 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import dash_daq as daq
 
-from app_utils import update_figure
+from app_utils import update_whether
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__)
 
 colors = {
     'background': '#ffffff',
@@ -33,22 +32,22 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     # This will fire every interval and update the plots data
     dcc.Interval(
         id='interval-component',
-        interval=5*1000,  # in milliseconds
+        interval=10*1000,  # in milliseconds
         n_intervals=0
     ),
 
     html.Div(
-        style={"display": "flex", 'textAlign': 'center'},
+        style={"display": "flex", 'justifyContent': 'space-around'},
         children=[
             dcc.DatePickerRange(
                 id='date-range',
-                min_date_allowed=dt.date(2021, 7, 1),
-                start_date=dt.date(2021, 7, 1),
+                min_date_allowed=dt.date(2021, 6, 1),
+                start_date=dt.date.today() - dt.timedelta(weeks=1),
                 end_date=dt.date.today(),
                 style={'textAlign': 'center'}
             ),
             daq.BooleanSwitch(
-                id='update_switch',
+                id='live_update_switch',
                 on=False,
                 label="Auto update",
                 labelPosition="top"
@@ -57,10 +56,11 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     ),
 
     html.Div(
-        style={"display": "flex"},
+        style={"display": "flex", 'justifyContent': 'center'},
         children=[
             dcc.Graph(id='temperature-graph'),
             dcc.Graph(id='pressure-graph'),
+            dcc.Graph(id='humidity-graph')
         ])
 ])
 
@@ -68,24 +68,20 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 @app.callback(
     Output('temperature-graph', 'figure'),
     Output('pressure-graph', 'figure'),
+    Output('humidity-graph', 'figure'),
     Input('date-range', 'start_date'),
     Input('date-range', 'end_date'),
     Input('interval-component', 'n_intervals')
 )
-def update_temperature(start: str, end: str, n_intervals):
-    print("updating data")
-    graphs = [
-        update_figure("temperature", start, end),
-        update_figure("pressure", start, end),
-    ]
-    return graphs
+def update_graphs(start: str, end: str, n_intervals):
+    return update_whether(start, end)
 
 
 @app.callback(
     Output('interval-component', 'disabled'),
-    Input('update_switch', 'on')
+    Input('live_update_switch', 'on')
 )
-def disable_update(on: bool):
+def disable_live_update(on: bool):
     return not on
 
 

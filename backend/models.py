@@ -4,10 +4,9 @@ from datetime import datetime
 from .database import Base
 
 
-class Temperature(Base):
-
-    __tablename__ = "temperature"
-
-    id = Column(Integer, primary_key=True, index=True)
-    date = Column(DateTime, unique=True, index=True, default=datetime.now)
-    value = Column(Float)
+class Whether(Base):
+    __tablename__ = "whether"
+    date = Column(DateTime, primary_key=True, index=True, default=datetime.now)
+    temperature = Column(Float)
+    pressure = Column(Float)
+    humidity = Column(Float)

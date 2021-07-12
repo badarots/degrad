@@ -11,26 +11,21 @@ def push_to_db(db: Session, entry):
     db.refresh(entry)
 
 
-def get_temperature(db: Session, temp_id: int):
-    db.delete()
-    return db.query(models.Temperature).filter(models.Temperature.id == temp_id).first()
-
-
-def get_temperatures(db: Session, start: datetime, end: datetime, limit: int = 100):
-    return db.query(models.Temperature)\
-        .filter(models.Temperature.date >= start, models.Temperature.date <= end)\
+def get_whether(db: Session, start: datetime, end: datetime, limit: int = 100):
+    return db.query(models.Whether)\
+        .filter(models.Whether.date >= start, models.Whether.date <= end)\
         .limit(limit).all()
 
 
-def create_temperature(db: Session, temp: schemas.TemperatureCreate):
-    db_temp = models.Temperature(**temp.dict())
+def create_whether(db: Session, temp: schemas.WhetherCreate):
+    db_temp = models.Whether(**temp.dict())
     push_to_db(db, db_temp)
     return db_temp
 
 
-def delete_temperatures(db: Session, start: datetime, end: datetime):
-    count = db.query(models.Temperature)\
-        .filter(models.Temperature.date >= start, models.Temperature.date <= end)\
+def delete_whether(db: Session, start: datetime, end: datetime):
+    count = db.query(models.Whether)\
+        .filter(models.Whether.date >= start, models.Whether.date <= end)\
         .delete()
     db.commit()
     return count

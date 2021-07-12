@@ -1,5 +1,6 @@
 from urllib.parse import urlencode, quote_plus
 import datetime as dt
+from typing import List
 
 import pandas as pd
 import plotly.express as px
@@ -13,9 +14,16 @@ def request_url(path: str, params: dict):
     return path + "?" + query
 
 
-def get_data(property: str, start_date: dt.datetime, end_date: dt.datetime, limit=1000):
+def get_data(property: str, start: str, end: str, limit=1000):
+    start_date = dt.date.fromisoformat(start)
+    start_datetime = dt.datetime.combine(start_date, dt.time())
+
+    end_date = dt.date.fromisoformat(end)
+    end_datetime = dt.datetime.combine(end_date, dt.time(23, 59, 59))
+
     prop_path = path + property
-    url = request_url(prop_path, {"start": start_date, "end": end_date, "limit": limit})
+    url = request_url(
+        prop_path, {"start": start_datetime, "end": end_datetime, "limit": limit})
     try:
         data = pd.read_json(url)
         if data.empty:
@@ -26,18 +34,17 @@ def get_data(property: str, start_date: dt.datetime, end_date: dt.datetime, limi
     except:
         return None
 
-def update_figure(property: str, start: str, end: str):
-    start_date = dt.date.fromisoformat(start)
-    start_datetime = dt.datetime.combine(start_date, dt.time())
 
-    end_date = dt.date.fromisoformat(end)
-    end_datetime = dt.datetime.combine(end_date, dt.time(23, 59, 59))
-    
-    df = get_data(property, start_datetime, end_datetime)
+def update_whether(start: str, end: str):
+    df = get_data('whether', start, end)
+    properties = ['temperature', 'pressure',  'humidity']
+    figures = []
     if df is not None:
-        fig = px.scatter(df, x="date", y="value", title=property)
-        # Enable scatter + connecting lines
-        fig.update_traces(mode='lines+markers')
-        return fig
+        for prop in properties:
+            fig = px.scatter(df, x="date", y=prop, title=prop)
+            # Enable scatter + connecting lines
+            fig.update_traces(mode='lines+markers')
+            figures.append(fig)
+        return figures
     else:
-        return px.scatter(title=property)
+        return [px.scatter(title=prob) for prob in properties] 

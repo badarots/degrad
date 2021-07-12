@@ -26,19 +26,19 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.post("/reading/temperature", response_model=schemas.Temperature)
-def add_temperature(reading: schemas.TemperatureCreate, db: Session = Depends(get_db)):
-    return crud.create_temperature(db, temp=reading)
-
-
-@app.delete("/reading/temperature")
-def delete_temperature(start: datetime, end: datetime, db: Session = Depends(get_db)):
-    return crud.delete_temperatures(db, start, end)
-
-
-@app.get("/reading/temperature", response_model=List[schemas.Temperature])
-def get_temperature(start: datetime, end: Optional[datetime], limit: int = 100, db: Session = Depends(get_db)):
+@app.get("/reading/whether", response_model=List[schemas.Whether])
+def get_whether(start: datetime, end: Optional[datetime] = None, limit: int = 100, db: Session = Depends(get_db)):
     if end is None:
         end = datetime.now()
-    temps = crud.get_temperatures(db, start=start, end=end, limit=limit)
+    temps = crud.get_whether(db, start=start, end=end, limit=limit)
     return temps
+
+
+@app.post("/reading/whether", response_model=schemas.Whether)
+def add_whether(reading: schemas.WhetherCreate, db: Session = Depends(get_db)):
+    return crud.create_whether(db, temp=reading)
+
+
+@app.delete("/reading/whether")
+def delete_whether(start: datetime, end: datetime, db: Session = Depends(get_db)):
+    return crud.delete_whether(db, start, end)
