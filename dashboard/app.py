@@ -41,6 +41,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         children=[
             dcc.DatePickerRange(
                 id='date-range',
+                display_format='DD/MM/YYYY',
                 min_date_allowed=dt.date(2021, 6, 1),
                 start_date=dt.date.today() - dt.timedelta(weeks=1),
                 end_date=dt.date.today(),
@@ -58,17 +59,13 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     html.Div(
         style={"display": "flex", 'justifyContent': 'center'},
         children=[
-            dcc.Graph(id='temperature-graph'),
-            dcc.Graph(id='pressure-graph'),
-            dcc.Graph(id='humidity-graph')
+            dcc.Graph(id='whether-graph')
         ])
 ])
 
 
 @app.callback(
-    Output('temperature-graph', 'figure'),
-    Output('pressure-graph', 'figure'),
-    Output('humidity-graph', 'figure'),
+    Output('whether-graph', 'figure'),
     Input('date-range', 'start_date'),
     Input('date-range', 'end_date'),
     Input('interval-component', 'n_intervals')

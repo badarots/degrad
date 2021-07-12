@@ -3,7 +3,8 @@ import datetime as dt
 from typing import List
 
 import pandas as pd
-import plotly.express as px
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 
 path = "http://127.0.0.1:8000/reading/"
@@ -37,14 +38,18 @@ def get_data(property: str, start: str, end: str, limit=1000):
 
 def update_whether(start: str, end: str):
     df = get_data('whether', start, end)
-    properties = ['temperature', 'pressure',  'humidity']
-    figures = []
-    if df is not None:
-        for prop in properties:
-            fig = px.scatter(df, x="date", y=prop, title=prop)
-            # Enable scatter + connecting lines
-            fig.update_traces(mode='lines+markers')
-            figures.append(fig)
-        return figures
-    else:
-        return [px.scatter(title=prob) for prob in properties] 
+    properties = ('temperature', 'pressure',  'humidity')
+
+    fig = make_subplots(rows=len(properties), cols=1, subplot_titles=properties, shared_xaxes=True,
+                        vertical_spacing=0.1)
+
+    for i, prop in enumerate(properties):
+        fig.add_trace(
+            go.Scatter(x=df['date'], y=df[prop], mode='lines+markers'),
+            row=i+1, col=1
+        )
+
+    fig.update_layout(height=800, width=600,
+                      title_text="Whether data", showlegend=False)
+
+    return fig
