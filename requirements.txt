@@ -1,5 +1,7 @@
 fastapi
 uvicorn[standard]
+ormar
+aiosqlite
 pandas
 dash
 dash_daq
