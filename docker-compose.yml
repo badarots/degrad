@@ -1,6 +1,6 @@
 # docker-compose.yml
 
-version: '3.8'
+version: '3.4'
 
 services:
   api:
@@ -32,9 +32,9 @@ services:
       - POSTGRES_DB=degrad
 
   grafana:
-    image: grafana/grafana
-    # build:
-    #   context: ./grafana
+    build:
+      context: ./grafana
+      dockerfile: Dockerfile
     ports:
       - 8002:3000
     volumes:
@@ -56,5 +56,5 @@ services:
 
 volumes:
   postgres_data:
-  grafana-data:
     # external: true
+  grafana-data:
