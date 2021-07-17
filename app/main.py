@@ -1,13 +1,11 @@
 # app/main.py
 
 from fastapi import FastAPI, Depends
-from typing import Optional, List
-from datetime import datetime
+from typing import List
 
 from app.db import database, Whether, Experiment
 from . import crud, models
-from .config import settings
-
+from app.config import settings
 
 
 app = FastAPI(title="DegradAPI")
@@ -17,8 +15,6 @@ app = FastAPI(title="DegradAPI")
 async def startup():
     if not database.is_connected:
         await database.connect()
-    # Create default experiment
-    await Experiment.objects.get_or_create(name=settings.default_experiment)
 
 
 @app.on_event("shutdown")
@@ -44,10 +40,11 @@ async def add_experiment(experiment: Experiment):
 
 @app.delete("/experiment")
 async def delete_experiment(name: str):
-    return await Experiment.objects.delete(name=name)
+    counts = Experiment.objects.delete(name=name)
+    return {"deleted_readings": counts}
 
 
-@app.get("/reading/whether", response_model=List[Whether], response_model_exclude={"experiment__id"})
+@app.get("/reading/whether", response_model=List[Whether], response_model_exclude={"id", "experiment__id"})
 async def get_whether(query: models.ReadingQuery = Depends()):
     return await crud.get_reading(Whether, query)
 

@@ -1,0 +1,60 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8001:80
+    environment:
+      - DATABASE_URL=postgresql://degrad:degrad@database:5432/degrad
+      - MAX_WORKERS=1
+    depends_on:
+      - database
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`api.degrad.localhost`)"
+
+  database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=degrad
+      - POSTGRES_PASSWORD=degrad
+      - POSTGRES_DB=degrad
+
+  grafana:
+    image: grafana/grafana
+    # build:
+    #   context: ./grafana
+    ports:
+      - 8002:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - database
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`degrad.localhost`)"
+
+  traefik:
+    image: traefik:v2.5
+    ports:
+      - 8000:80
+      - 8080:8080
+    volumes:
+      - "./traefik.toml:/etc/traefik/traefik.toml"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+volumes:
+  postgres_data:
+  grafana-data:
+    # external: true

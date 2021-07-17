@@ -2,6 +2,5 @@ fastapi
 uvicorn[standard]
 ormar
 aiosqlite
-pandas
-dash
-dash_daq
+psycopg2-binary
+asyncpg

@@ -4,9 +4,9 @@ import databases
 import ormar
 import sqlalchemy
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional
 
-from .config import settings
+from app.config import settings
 
 database = databases.Database(settings.db_url)
 metadata = sqlalchemy.MetaData()
@@ -29,8 +29,9 @@ class Whether(ormar.Model):
     class Meta(BaseMeta):
         tablename = "whether"
 
+    id: int = ormar.Integer(primary_key=True)
     date: datetime = ormar.DateTime(
-        primary_key=True, index=True, default=datetime.now, unique=False)
+        index=True, default=datetime.now, unique=False)
     temperature: float = ormar.Float()
     pressure: float = ormar.Float(nullable=True)
     humidity: float = ormar.Float(nullable=True)

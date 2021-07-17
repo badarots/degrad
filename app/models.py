@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
 
-from .config import settings
+from app.config import settings
 
 
 class ReadingQuery(BaseModel):
