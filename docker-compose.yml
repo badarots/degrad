@@ -17,13 +17,15 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fastapi.rule=Host(`api.degrad.localhost`)"
+    volumes:
+      - "./api/alembic/versions:/app/alembic/versions"
 
   database:
     build:
       context: ./database
       dockerfile: Dockerfile
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres-data:/var/lib/postgresql/data/
     expose:
       - 5432
     environment:
@@ -55,6 +57,6 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 volumes:
-  postgres_data:
-    # external: true
   grafana-data:
+  postgres-data:
+    external: true

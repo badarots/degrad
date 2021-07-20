@@ -2,20 +2,23 @@
 
 Essa é a API de aquição de dados do experimento. Deve rodar em um servidor e tem objetivo de recerber os dados medidos e salva-los em um base de dados SQL.
 
-## Instalação usando `virtualenv`
+## Execução com docker-compose
 
-Primeiro instale o `virtualenv` e crie um novo ambiente
+Primeiro crie um volume permanente para a base de dados
 
-    pip install --user virtualenv
-    virtualenv venv
+    docker volume create postgres-data
 
-Ative o novo ambiente e instale as dependências
+Para construir e inicializar os container rode
 
-    source venv/bin/activate
-    pip install -r requirements.txt
+    docker-compose up --build
 
-## Executando
+## Usando o alembic para alterar a base de dados
 
-    uvicorn app.main:app --reload
+Precisamos rodar os seguinte comandos quando mudarmos a base de dados.
 
-ou execute o script `run.sh`
+    # Primeiro reconstrua as imagens para adicionar as últimas mudanças no código
+    docker-compose build
+    # Gere o script de migração
+    docker-compose run api alembic revision --autogenerate -m "made some changes"
+    # Execute a migração. Opicional, já que a migração é executada durante a inicialição do container
+    docker-compose run api alembic upgrade head

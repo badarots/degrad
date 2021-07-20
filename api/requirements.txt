@@ -4,3 +4,4 @@ ormar
 aiosqlite
 psycopg2-binary
 asyncpg
+alembic

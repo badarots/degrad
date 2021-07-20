@@ -39,5 +39,5 @@ class Whether(ormar.Model):
         Experiment, skip_reverse=True)
 
 
-engine = sqlalchemy.create_engine(settings.db_url)
-metadata.create_all(engine)
+# engine = sqlalchemy.create_engine(settings.db_url)
+# metadata.create_all(engine)
