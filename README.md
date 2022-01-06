@@ -22,3 +22,19 @@ Precisamos rodar os seguinte comandos quando mudarmos a base de dados.
     docker-compose run api alembic revision --autogenerate -m "made some changes"
     # Execute a migração. Opicional, já que a migração é executada durante a inicialição do container
     docker-compose run api alembic upgrade head
+
+## Compose v2
+
+Uma nova versão do docker composer foi liberada, a v2. Nesse versão os comandos são executados sem o `-`. Troque `docker-compose` por `docker compose`.
+
+## TODO
+
+- Backup da base de dados. [exemplo](https://simplebackups.com/blog/docker-postgres-backup-restore-guide-with-examples/)
+- Backup das configurações do Grafana. [exemplo](https://stackoverflow.com/questions/45207785/how-do-i-back-up-docker-volume-for-postgres)
+- Algum tipo de autenticação na API.
+
+
+## Rerências
+
+ - [FastAPI behind a proxy](https://fastapi.tiangolo.com/advanced/behind-a-proxy/)
+ - [Grafana behind a proxy](https://stackoverflow.com/questions/49786801/using-traefik-to-reverse-proxy-grafana-at-a-suburl-404-responses)

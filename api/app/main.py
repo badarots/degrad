@@ -8,7 +8,7 @@ from . import crud, models
 from app.config import settings
 
 
-app = FastAPI(title="DegradAPI")
+app = FastAPI(title="DegradAPI", root_path=settings.root_path)
 
 
 @app.on_event("startup")

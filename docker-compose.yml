@@ -10,13 +10,18 @@ services:
     ports:
       - 8001:80
     environment:
+      - API_PATH
       - DATABASE_URL=postgresql://degrad:degrad@database:5432/degrad
       - MAX_WORKERS=1
     depends_on:
       - database
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`api.degrad.localhost`)"
+      - "traefik.http.routers.fastapi.rule=(Host(`localhost`) &&
+        PathPrefix(`$API_PATH`))"
+      - "traefik.http.routers.fastapi.middlewares=fastapi-stripprefix"
+      - "traefik.http.middlewares.fastapi-stripprefix.stripprefix.prefixes=$API\
+        _PATH"
     volumes:
       - "./api/alembic/versions:/app/alembic/versions"
 
@@ -43,9 +48,15 @@ services:
       - grafana-data:/var/lib/grafana
     depends_on:
       - database
+    # Configura proxy
+    environment:
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s${DASH_PATH}/
+      # - GF_SERVER_DOMAIN=example.com
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`degrad.localhost`)"
+      - "traefik.http.routers.grafana.rule=(Host(`localhost`) &&
+        PathPrefix(`$DASH_PATH`))"
 
   traefik:
     image: traefik:v2.5
@@ -57,6 +68,6 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 volumes:
-  grafana-data:
+  grafana-data: null
   postgres-data:
     external: true
