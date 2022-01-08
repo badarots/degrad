@@ -12,4 +12,3 @@ class ReadingQuery(BaseModel):
     end: Optional[datetime]
     experiment: Optional[str] = None
     limit: int = 1000
-

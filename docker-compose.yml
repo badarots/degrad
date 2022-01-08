@@ -11,13 +11,14 @@ services:
       - 8001:80
     environment:
       - API_PATH
+      - API_KEY
       - DATABASE_URL=postgresql://degrad:degrad@database:5432/degrad
       - MAX_WORKERS=1
     depends_on:
       - database
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=(Host(`localhost`) &&
+      - "traefik.http.routers.fastapi.rule=(Host(`$HOST`) &&
         PathPrefix(`$API_PATH`))"
       - "traefik.http.routers.fastapi.middlewares=fastapi-stripprefix"
       - "traefik.http.middlewares.fastapi-stripprefix.stripprefix.prefixes=$API\
@@ -51,11 +52,11 @@ services:
     # Configura proxy
     environment:
       - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s${DASH_PATH}/
-      # - GF_SERVER_DOMAIN=example.com
+      - GF_SERVER_DOMAIN=$HOST
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=(Host(`localhost`) &&
+      - "traefik.http.routers.grafana.rule=(Host(`$HOST`) &&
         PathPrefix(`$DASH_PATH`))"
 
   traefik:

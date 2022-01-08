@@ -1,8 +1,23 @@
 from datetime import datetime
-from ormar import Model
+from fastapi import Security, HTTPException, status
+from fastapi.security.api_key import APIKeyQuery
 
 from app import models
 from app.db import Experiment
+from app.config import settings
+
+API_KEY_NAME = "api_key"
+api_key_query = APIKeyQuery(name=API_KEY_NAME, auto_error=False)
+
+
+async def get_api_key(api_key: str = Security(api_key_query)):
+    if api_key == settings.api_key:
+        return api_key
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZE,
+        detail="Could not validate credentials"
+    )
 
 
 async def get_reading(model: Model, params: models.ReadingQuery):

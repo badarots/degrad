@@ -2,6 +2,15 @@
 
 Essa é a API de aquição de dados do experimento. Deve rodar em um servidor e tem objetivo de recerber os dados medidos e salva-los em um base de dados SQL.
 
+## Arquivo de configuração
+
+Crie um arquivo `.env` na raiz do repositório. Ele deverá conter as seguintes variáveis, que configuram a aplicação:
+
+    # exemplo de valores
+    API_PATH=/degrad/api
+    DASH_PATH=/degrad/dash
+    SECRET_KEY=secret
+
 ## Execução com docker-compose
 
 Primeiro crie um volume permanente para a base de dados
@@ -36,5 +45,5 @@ Uma nova versão do docker composer foi liberada, a v2. Nesse versão os comando
 
 ## Rerências
 
- - [FastAPI behind a proxy](https://fastapi.tiangolo.com/advanced/behind-a-proxy/)
- - [Grafana behind a proxy](https://stackoverflow.com/questions/49786801/using-traefik-to-reverse-proxy-grafana-at-a-suburl-404-responses)
+- [FastAPI behind a proxy](https://fastapi.tiangolo.com/advanced/behind-a-proxy/)
+- [Grafana behind a proxy](https://stackoverflow.com/questions/49786801/using-traefik-to-reverse-proxy-grafana-at-a-suburl-404-responses)
