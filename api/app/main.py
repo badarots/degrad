@@ -1,8 +1,10 @@
 # app/main.py
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.security.api_key import APIKey
 from typing import List
+from ormar import NoMatch
 
 from app.db import database, Whether, Experiment
 from . import crud, models
@@ -23,6 +25,24 @@ async def shutdown():
         await database.disconnect()
 
 
+@app.exception_handler(NoMatch)
+async def nomatch_exception_handler(request: Request, exception: NoMatch):
+    msg = "Item not found"
+    if exception.args:
+        msg += ". {}".format(exception)
+
+    return JSONResponse(status_code=404, content={"message": msg})
+
+
+@app.exception_handler(models.BadRequest)
+async def valueerror_exception_handler(request: Request, exception: models.BadRequest):
+    msg = "Invalid arguments"
+    if exception.args:
+        msg += ". {}".format(exception)
+
+    return JSONResponse(status_code=400, content={"message": msg})
+
+
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
@@ -35,11 +55,16 @@ async def get_experiments(api_key: APIKey = Depends(crud.get_api_key)):
 
 @app.post("/experiment", response_model=Experiment)
 async def add_experiment(experiment: Experiment, api_key: APIKey = Depends(crud.get_api_key)):
+    if experiment.name == 'all':
+        raise ValueError("'all' is not allowed as an experiment name")
     return await experiment.save()
 
 
 @app.delete("/experiment")
 async def delete_experiment(name: str, api_key: APIKey = Depends(crud.get_api_key)):
+    experiments = await Experiment.objects.get(name=name)
+    await experiments.delete()
+    return {"deleted_experiments": experiments}
 
 
 @app.get("/reading/whether", response_model=List[Whether], response_model_exclude={"id", "experiment__id"})

@@ -7,9 +7,11 @@ Essa é a API de aquição de dados do experimento. Deve rodar em um servidor e 
 Crie um arquivo `.env` na raiz do repositório. Ele deverá conter as seguintes variáveis, que configuram a aplicação:
 
     # exemplo de valores
+    HOST=localhost
+    PORT=8000
     API_PATH=/degrad/api
     DASH_PATH=/degrad/dash
-    SECRET_KEY=secret
+    API_KEY=secret
 
 ## Execução com docker-compose
 
