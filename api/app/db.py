@@ -30,8 +30,7 @@ class Whether(ormar.Model):
         tablename = "whether"
 
     id: int = ormar.Integer(primary_key=True)
-    date: datetime = ormar.DateTime(
-        index=True, default=datetime.now, unique=False)
+    date: datetime = ormar.DateTime(default=datetime.utcnow)
     temperature: float = ormar.Float()
     pressure: float = ormar.Float(nullable=True)
     humidity: float = ormar.Float(nullable=True)

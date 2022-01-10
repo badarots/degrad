@@ -34,7 +34,7 @@ async def get_experiment(name: str):
 
 async def get_reading(model: Model, params: models.ReadingQuery):
     if params.end is None:
-        params.end = datetime.now()
+        params.end = datetime.utcnow()
 
     # also load experiment data
     query = model.objects.select_related(model.experiment).filter(
