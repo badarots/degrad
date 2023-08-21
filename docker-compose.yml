@@ -1,14 +1,12 @@
 # docker-compose.yml
 
-version: '3.4'
+version: '3.5'
 
 services:
   api:
     build:
       context: ./api
       dockerfile: Dockerfile
-    ports:
-      - 8001:80
     environment:
       - API_PATH
       - API_KEY
@@ -18,11 +16,12 @@ services:
       - database
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=(Host(`$HOST`) &&
-        PathPrefix(`$API_PATH`))"
+      - "traefik.http.routers.fastapi.rule=(Host(`$HOST`) && PathPrefix(`$API_PATH`))"
+      - "traefik.http.routers.fastapi.entrypoints=websecure"
+      - traefik.http.services.fastapi.loadbalancer.server.port=80
+      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
       - "traefik.http.routers.fastapi.middlewares=fastapi-stripprefix"
-      - "traefik.http.middlewares.fastapi-stripprefix.stripprefix.prefixes=$API\
-        _PATH"
+      - "traefik.http.middlewares.fastapi-stripprefix.stripprefix.prefixes=$API_PATH"
     volumes:
       - "./api/alembic/versions:/app/alembic/versions"
 
@@ -43,30 +42,57 @@ services:
     build:
       context: ./grafana
       dockerfile: Dockerfile
-    ports:
-      - 8002:3000
     volumes:
       - grafana-data:/var/lib/grafana
     depends_on:
       - database
-    # Configura proxy
     environment:
+    # Configura proxy
       - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s${DASH_PATH}/
       - GF_SERVER_DOMAIN=$HOST
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=(Host(`$HOST`) &&
-        PathPrefix(`$DASH_PATH`))"
+      - "traefik.http.routers.grafana.rule=(Host(`$HOST`) && PathPrefix(`$DASH_PATH`))"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
 
   traefik:
-    image: traefik:v2.5
+    image: traefik:v2.10
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      # - "--api.dashboard=true"
+      # Providers
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file=true"
+      - "--providers.file.filename=/etc/traefik/rules.toml"
+      # Entry points 
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # SSL
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"      
+      # - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.letsencrypt.acme.email=$EMAIL"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      # Global redirect to https
+      # - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      # - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
     ports:
-      - $PORT:80
-      - 8080:8080
+      # - $PORT:80
+      - "80:80"
+      - "443:443"
+      # - "8080:8080"
     volumes:
-      - "./traefik.toml:/etc/traefik/traefik.toml"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+      # File provider
+      - "./rules.toml:/etc/traefik/rules.toml"
+    extra_hosts:
+      # Enable access to host using http://host.docker.internal
+      - "host.docker.internal:host-gateway"
 
 volumes:
   grafana-data: null

@@ -1,3 +1,4 @@
+#! /usr/bin/env sh
 set -eu
 
 echo "Waiting for postgres connection"
@@ -22,4 +23,4 @@ echo "PostgreSQL started"
 echo "Executting alembic migration"
 alembic upgrade head
 
-exec "$@"
+exec uvicorn app.main:app --reload --reload-dir app --proxy-headers --port 80 --host 0.0.0.0

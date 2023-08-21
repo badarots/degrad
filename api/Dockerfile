@@ -1,8 +1,15 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8-slim
 
-RUN apt-get update && apt-get install -y netcat
+FROM python:3.11
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive \
+    apt-get install --no-install-recommends --assume-yes \
+      netcat-openbsd
 
-COPY . /app
+WORKDIR /code
+
+COPY . /code
+
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+CMD ["/code/start.sh"]

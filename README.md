@@ -12,8 +12,9 @@ Crie um arquivo `.env` na raiz do repositório. Ele deverá conter as seguintes 
     API_PATH=/degrad/api
     DASH_PATH=/degrad/dash
     API_KEY=secret
+    EMAIL=user@example.com
 
-## Execução com docker-compose
+## Execução com docker compose
 
 Primeiro crie um volume permanente para a base de dados
 
@@ -21,29 +22,23 @@ Primeiro crie um volume permanente para a base de dados
 
 Para construir e inicializar os container rode
 
-    docker-compose up --build
+    docker compose up -d --build
 
 ## Usando o alembic para alterar a base de dados
 
 Precisamos rodar os seguinte comandos quando mudarmos a base de dados.
 
     # Primeiro reconstrua as imagens para adicionar as últimas mudanças no código
-    docker-compose build
+    docker compose build
     # Gere o script de migração
-    docker-compose run api alembic revision --autogenerate -m "made some changes"
+    docker compose run api alembic revision --autogenerate -m "made some changes"
     # Execute a migração. Opicional, já que a migração é executada durante a inicialição do container
-    docker-compose run api alembic upgrade head
-
-## Compose v2
-
-Uma nova versão do docker composer foi liberada, a v2. Nesse versão os comandos são executados sem o `-`. Troque `docker-compose` por `docker compose`.
+    docker compose run api alembic upgrade head
 
 ## TODO
 
 - Backup da base de dados. [exemplo](https://simplebackups.com/blog/docker-postgres-backup-restore-guide-with-examples/)
 - Backup das configurações do Grafana. [exemplo](https://stackoverflow.com/questions/45207785/how-do-i-back-up-docker-volume-for-postgres)
-- Algum tipo de autenticação na API.
-
 
 ## Rerências
 
