@@ -25,17 +25,20 @@ class Experiment(ormar.Model):
     name: str = ormar.String(max_length=100, unique=True)
 
 
-class Whether(ormar.Model):
+class BaseReading():
+    id: int = ormar.Integer(primary_key=True)
+    date: datetime = ormar.DateTime(default=datetime.utcnow)
+    experiment: Optional[Experiment] = ormar.ForeignKey(
+        Experiment, skip_reverse=True)
+
+
+class Whether(ormar.Model, BaseReading):
     class Meta(BaseMeta):
         tablename = "whether"
 
-    id: int = ormar.Integer(primary_key=True)
-    date: datetime = ormar.DateTime(default=datetime.utcnow)
     temperature: float = ormar.Float()
     pressure: float = ormar.Float(nullable=True)
     humidity: float = ormar.Float(nullable=True)
-    experiment: Optional[Experiment] = ormar.ForeignKey(
-        Experiment, skip_reverse=True)
 
 
 # engine = sqlalchemy.create_engine(settings.db_url)

@@ -64,6 +64,9 @@ async def save_reading(reading: Model):
 
 
 async def delete_reading(model: Model, params: models.ReadingQuery):
+    if params.end is None:
+        params.end = datetime.utcnow()
+
     query = model.objects.filter(
         (model.date >= params.start) & (model.date <= params.end))
 
