@@ -4,9 +4,6 @@
 # sqlite databases
 *.db
 
-# Alembic upgrades
-api/alembic/versions
-
 # Certificates
 letsencrypt/
 acme.json

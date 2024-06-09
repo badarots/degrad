@@ -1,7 +1,0 @@
-fastapi
-uvicorn[standard]
-ormar
-aiosqlite
-psycopg2-binary
-asyncpg
-alembic

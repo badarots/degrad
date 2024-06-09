@@ -1,7 +1,5 @@
 # docker-compose.yml
 
-version: '3.5'
-
 services:
   api:
     build:
@@ -10,7 +8,7 @@ services:
     environment:
       - API_PATH
       - API_KEY
-      - DATABASE_URL=postgresql://degrad:degrad@database:5432/degrad
+      - DATABASE_URL=postgresql+psycopg://degrad:degrad@database:5432/degrad
       - MAX_WORKERS=1
     depends_on:
       - database
@@ -68,13 +66,13 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--providers.file=true"
       - "--providers.file.filename=/etc/traefik/rules.toml"
-      # Entry points 
+      # Entry points
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls.certresolver=letsencrypt"
       # SSL
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"      
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       # - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.letsencrypt.acme.email=$EMAIL"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"

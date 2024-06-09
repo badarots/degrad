@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "degrad-api"
+version = "0.1.0"
+description = ""
+authors = ["Thiago Badaró <badarots@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.111.0"
+unicorn = {extras = ["standard"], version = "^2.0.1.post1"}
+alembic = "^1.13.1"
+sqlalchemy = "^2.0.30"
+psycopg = {extras = ["binary"], version = "^3.1.19"}
+pydantic = "^2.7.3"
+pydantic-settings = "^2.3.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
